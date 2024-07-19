@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "generate": "drizzle-kit generate:pg",
-    "dev": "bun --watch src/http/server.ts",
+    "build": "bun run tsc",
+    "start": "bun --watch src/http/server.ts",
     "migrate": "bun src/db/migrate.ts",
     "seed": "bun src/db/seed.ts",
     "postinstall": "bun migrate"
