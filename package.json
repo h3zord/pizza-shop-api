@@ -7,8 +7,7 @@
     "generate": "drizzle-kit generate:pg",
     "dev": "bun --watch src/http/server.ts",
     "migrate": "bun src/db/migrate.ts",
-    "seed": "bun src/db/seed.ts",
-    "postinstall": "bun seed && bun migrate"
+    "seed": "bun src/db/seed.ts"  
   },
   "author": "Diego Fernandes <diego.schell.f@gmail.com>",
   "license": "MIT",
