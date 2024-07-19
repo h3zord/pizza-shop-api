@@ -6,10 +6,13 @@ import { createId } from '@paralleldrive/cuid2'
 // import { AuthenticationMagicLinkTemplate } from '@/mail/templates/authentication-magic-link'
 import { env } from '@/env'
 import { UnauthorizedError } from './errors/unauthorized-error'
+import { seedDatabase } from '@/db/seed'
 
 export const sendAuthenticationLink = new Elysia().post(
   '/authenticate',
   async ({ body }) => {
+    await seedDatabase()
+
     const { email } = body
 
     const userFromEmail = await db.query.users.findFirst({
@@ -33,8 +36,6 @@ export const sendAuthenticationLink = new Elysia().post(
     authLink.searchParams.set('code', authLinkCode)
     authLink.searchParams.set('redirect', env.AUTH_REDIRECT_URL)
 
-    console.log(authLink.toString())
-
     // await resend.emails.send({
     //   from: 'Pizza Shop <naoresponda@fala.dev>',
     //   to: email,
@@ -44,6 +45,8 @@ export const sendAuthenticationLink = new Elysia().post(
     //     authLink: authLink.toString(),
     //   }),
     // })
+
+    return authLink.toString()
   },
   {
     body: t.Object({
