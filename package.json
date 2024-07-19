@@ -8,7 +8,7 @@
     "dev": "bun --watch src/http/server.ts",
     "migrate": "bun src/db/migrate.ts",
     "seed": "bun src/db/seed.ts",
-    "postinstall": "bun migrate"
+    "postinstall": "bun migrate && bun run dev"
   },
   "author": "Diego Fernandes <diego.schell.f@gmail.com>",
   "license": "MIT",
