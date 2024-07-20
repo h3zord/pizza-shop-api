@@ -22,6 +22,8 @@ export const sendAuthenticationLink = new Elysia().post(
     })
 
     if (!userFromEmail) {
+      console.log('user not found')
+
       throw new UnauthorizedError()
     }
 

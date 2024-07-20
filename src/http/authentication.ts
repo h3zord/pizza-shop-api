@@ -16,7 +16,7 @@ export const authentication = new Elysia()
     NOT_A_MANAGER: NotAManagerError,
   })
   .onError(({ code, error, set }) => {
-    console.log('a')
+    console.log('error =>', error)
 
     switch (code) {
       case 'UNAUTHORIZED':
@@ -41,6 +41,8 @@ export const authentication = new Elysia()
         const payload = await jwt.verify(cookie.auth)
 
         if (!payload) {
+          console.log('payload not found')
+
           throw new UnauthorizedError()
         }
 
@@ -48,6 +50,7 @@ export const authentication = new Elysia()
       },
       signUser: async (payload: Static<typeof jwtPayloadSchema>) => {
         setCookie('auth', await jwt.sign(payload), {
+          httpOnly: true,
           maxAge: 7 * 86400,
           path: '/',
         })
