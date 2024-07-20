@@ -6,12 +6,12 @@ import { createId } from '@paralleldrive/cuid2'
 // import { AuthenticationMagicLinkTemplate } from '@/mail/templates/authentication-magic-link'
 import { env } from '@/env'
 import { UnauthorizedError } from './errors/unauthorized-error'
-import { seedDatabase } from '@/db/seed'
+// import { seedDatabase } from '@/db/seed'
 
 export const sendAuthenticationLink = new Elysia().post(
   '/authenticate',
   async ({ body }) => {
-    await seedDatabase()
+    // await seedDatabase()
 
     const { email } = body
 

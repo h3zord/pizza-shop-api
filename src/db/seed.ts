@@ -1,7 +1,7 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
 
 import {
-  // authLinks,
+  authLinks,
   evaluations,
   orders,
   products,
@@ -23,7 +23,7 @@ export async function seedDatabase() {
   await db.delete(evaluations)
   await db.delete(products)
   await db.delete(restaurants)
-  // await db.delete(authLinks)
+  await db.delete(authLinks)
   await db.delete(users)
 
   console.log(chalk.yellow('✔ Database reset'))
