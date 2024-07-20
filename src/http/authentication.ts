@@ -46,6 +46,7 @@ export const authentication = new Elysia()
       },
       signUser: async (payload: Static<typeof jwtPayloadSchema>) => {
         setCookie('auth', await jwt.sign(payload), {
+          httpOnly: true,
           maxAge: 7 * 86400,
           path: '/',
         })
