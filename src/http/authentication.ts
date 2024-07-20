@@ -16,7 +16,7 @@ export const authentication = new Elysia()
     NOT_A_MANAGER: NotAManagerError,
   })
   .onError(({ code, error, set }) => {
-    console.log(error)
+    console.log('a')
 
     switch (code) {
       case 'UNAUTHORIZED':
