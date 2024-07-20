@@ -16,6 +16,8 @@ export const authentication = new Elysia()
     NOT_A_MANAGER: NotAManagerError,
   })
   .onError(({ code, error, set }) => {
+    console.log(error)
+
     switch (code) {
       case 'UNAUTHORIZED':
         set.status = 401
@@ -46,7 +48,6 @@ export const authentication = new Elysia()
       },
       signUser: async (payload: Static<typeof jwtPayloadSchema>) => {
         setCookie('auth', await jwt.sign(payload), {
-          httpOnly: true,
           maxAge: 7 * 86400,
           path: '/',
         })
