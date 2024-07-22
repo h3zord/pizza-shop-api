@@ -38,6 +38,8 @@ export const sendAuthenticationLink = new Elysia().post(
         userId: userFromEmail.id,
         code: authLinkCode,
       })
+    } else {
+      throw new UnauthorizedError()
     }
 
     const authLink = new URL('/auth-links/authenticate', env.API_BASE_URL)
