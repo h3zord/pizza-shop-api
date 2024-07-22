@@ -14,7 +14,7 @@ import chalk from 'chalk'
 import { orderItems } from './schema/order-items'
 import { createId } from '@paralleldrive/cuid2'
 
-export async function seedDatabase() {
+export async function seedDatabase(email?: string) {
   /**
    * Reset database
    */
@@ -57,7 +57,7 @@ export async function seedDatabase() {
     .insert(users)
     .values({
       name: faker.person.fullName(),
-      email: 'lucaschmain@gmail.com',
+      email: email ?? 'test@test.com',
       role: 'manager',
     })
     .returning()

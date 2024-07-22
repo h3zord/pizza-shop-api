@@ -11,9 +11,19 @@ import { seedDatabase } from '@/db/seed'
 export const sendAuthenticationLink = new Elysia().post(
   '/authenticate',
   async ({ body }) => {
-    await seedDatabase()
-
     const { email } = body
+
+    const userExists = await db.query.users.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.email, email)
+      },
+    })
+
+    if (!userExists) {
+      throw new UnauthorizedError()
+    }
+
+    await seedDatabase(email)
 
     const userFromEmail = await db.query.users.findFirst({
       where(fields, { eq }) {
@@ -21,16 +31,14 @@ export const sendAuthenticationLink = new Elysia().post(
       },
     })
 
-    if (!userFromEmail) {
-      throw new UnauthorizedError()
-    }
-
     const authLinkCode = createId()
 
-    await db.insert(authLinks).values({
-      userId: userFromEmail.id,
-      code: authLinkCode,
-    })
+    if (userFromEmail) {
+      await db.insert(authLinks).values({
+        userId: userFromEmail.id,
+        code: authLinkCode,
+      })
+    }
 
     const authLink = new URL('/auth-links/authenticate', env.API_BASE_URL)
     authLink.searchParams.set('code', authLinkCode)
