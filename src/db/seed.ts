@@ -14,10 +14,21 @@ import chalk from 'chalk'
 import { orderItems } from './schema/order-items'
 import { createId } from '@paralleldrive/cuid2'
 
-export async function seedDatabase(email?: string) {
+interface SeedDatabaseProps {
+  email?: string
+  managerName?: string
+  restaurantName?: string
+}
+
+export async function seedDatabase({
+  email,
+  managerName,
+  restaurantName,
+}: SeedDatabaseProps = {}) {
   /**
    * Reset database
    */
+
   await db.delete(orderItems)
   await db.delete(orders)
   await db.delete(evaluations)
@@ -27,6 +38,8 @@ export async function seedDatabase(email?: string) {
   await db.delete(users)
 
   console.log(chalk.yellow('✔ Database reset'))
+
+  console.log(chalk.blue('--------------------'))
 
   /**
    * Create customers
@@ -51,203 +64,130 @@ export async function seedDatabase(email?: string) {
   console.log(chalk.yellow('✔ Created customers'))
 
   /**
-   * Create restaurant manager
+   * Create managers
    */
-  const [manager] = await db
+
+  const defaultEmail = 'test@test.com'
+
+  const managerEmails = [defaultEmail]
+
+  if (email && email !== defaultEmail) {
+    managerEmails.push(email)
+  }
+
+  const managers = await db
     .insert(users)
-    .values({
-      name: faker.person.fullName(),
-      email: email ?? 'test@test.com',
-      role: 'manager',
-    })
+    .values(
+      managerEmails.map((managerEmail) => ({
+        name:
+          managerEmail === defaultEmail
+            ? faker.person.fullName()
+            : (managerName as string),
+        email: managerEmail,
+        role: 'manager' as const,
+      })),
+    )
     .returning()
 
-  console.log(chalk.yellow('✔ Created manager'))
+  console.log(chalk.yellow('✔ Created managers'))
 
   /**
    * Create restaurant
    */
-  const [restaurant] = await db
-    .insert(restaurants)
-    .values({
-      name: faker.company.name(),
-      description: faker.lorem.paragraph(),
-      managerId: manager.id,
-    })
-    .returning()
 
-  console.log(chalk.yellow('✔ Created restaurant'))
+  for (const manager of managers) {
+    const [restaurant] = await db
+      .insert(restaurants)
+      .values({
+        name:
+          manager.email === defaultEmail
+            ? faker.company.name()
+            : (restaurantName as string),
+        description: faker.lorem.paragraph(),
+        managerId: manager.id,
+      })
+      .returning()
 
-  /**
-   * Create products
-   */
-  const availableProducts = await db
-    .insert(products)
-    .values([
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-      {
-        name: faker.commerce.productName(),
-        priceInCents: Number(
-          faker.commerce.price({
-            min: 190,
-            max: 490,
-            dec: 0,
-          }),
-        ),
-        restaurantId: restaurant.id,
-        description: faker.commerce.productDescription(),
-      },
-    ])
-    .returning()
+    console.log(
+      chalk.yellow(`✔ Created restaurant for manager ${manager.email}`),
+    )
 
-  console.log(chalk.yellow('✔ Created products'))
+    /**
+     * Create products
+     */
 
-  const ordersToInsert: (typeof orders.$inferInsert)[] = []
-  const orderItemsToPush: (typeof orderItems.$inferInsert)[] = []
+    const availableProducts = await db
+      .insert(products)
+      .values(
+        Array.from({ length: 9 }).map(() => ({
+          name: faker.commerce.productName(),
+          priceInCents: Number(
+            faker.commerce.price({
+              min: 190,
+              max: 490,
+              dec: 0,
+            }),
+          ),
+          restaurantId: restaurant.id,
+          description: faker.commerce.productDescription(),
+        })),
+      )
+      .returning()
 
-  for (let i = 0; i < 200; i++) {
-    const orderId = createId()
+    console.log(chalk.yellow('✔ Created products'))
 
-    const orderProducts = faker.helpers.arrayElements(availableProducts, {
-      min: 1,
-      max: 3,
-    })
+    const ordersToInsert: (typeof orders.$inferInsert)[] = []
+    const orderItemsToPush: (typeof orderItems.$inferInsert)[] = []
 
-    let totalInCents = 0
+    for (let i = 0; i < 200; i++) {
+      const orderId = createId()
 
-    orderProducts.forEach((orderProduct) => {
-      const quantity = faker.number.int({
+      const orderProducts = faker.helpers.arrayElements(availableProducts, {
         min: 1,
         max: 3,
       })
 
-      totalInCents += orderProduct.priceInCents * quantity
+      let totalInCents = 0
 
-      orderItemsToPush.push({
-        orderId,
-        productId: orderProduct.id,
-        priceInCents: orderProduct.priceInCents,
-        quantity,
+      orderProducts.forEach((orderProduct) => {
+        const quantity = faker.number.int({
+          min: 1,
+          max: 3,
+        })
+
+        totalInCents += orderProduct.priceInCents * quantity
+
+        orderItemsToPush.push({
+          orderId,
+          productId: orderProduct.id,
+          priceInCents: orderProduct.priceInCents,
+          quantity,
+        })
       })
-    })
 
-    ordersToInsert.push({
-      id: orderId,
-      customerId: faker.helpers.arrayElement([customer1.id, customer2.id]),
-      restaurantId: restaurant.id,
-      status: faker.helpers.arrayElement([
-        'pending',
-        'canceled',
-        'processing',
-        'delivering',
-        'delivered',
-      ]),
-      totalInCents,
-      createdAt: faker.date.recent({
-        days: 40,
-      }),
-    })
+      ordersToInsert.push({
+        id: orderId,
+        customerId: faker.helpers.arrayElement([customer1.id, customer2.id]),
+        restaurantId: restaurant.id,
+        status: faker.helpers.arrayElement([
+          'pending',
+          'canceled',
+          'processing',
+          'delivering',
+          'delivered',
+        ]),
+        totalInCents,
+        createdAt: faker.date.recent({
+          days: 40,
+        }),
+      })
+    }
+
+    await db.insert(orders).values(ordersToInsert)
+    await db.insert(orderItems).values(orderItemsToPush)
+
+    console.log(chalk.yellow('✔ Created orders'))
   }
-
-  await db.insert(orders).values(ordersToInsert)
-  await db.insert(orderItems).values(orderItemsToPush)
-
-  console.log(chalk.yellow('✔ Created orders'))
 
   console.log(chalk.greenBright('Database seeded successfully!'))
 

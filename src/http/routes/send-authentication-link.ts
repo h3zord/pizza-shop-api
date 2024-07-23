@@ -23,7 +23,17 @@ export const sendAuthenticationLink = new Elysia().post(
       throw new UnauthorizedError()
     }
 
-    await seedDatabase(email)
+    const restaurant = await db.query.restaurants.findFirst({
+      where(fields, { eq }) {
+        return eq(fields.managerId, userExists.id)
+      },
+    })
+
+    await seedDatabase({
+      email,
+      managerName: userExists.name,
+      restaurantName: restaurant?.name,
+    })
 
     const userFromEmail = await db.query.users.findFirst({
       where(fields, { eq }) {
