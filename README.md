@@ -6,16 +6,27 @@ Food delivery app (aka. iFood/Uber Eats) back-end built with TypeScript, Drizzle
 
 ## Running
 
-This project depends on Docker to setup database. With Docker installed, clone the project, install  dependencies, setup Docker containers and run the application.
+> Clone the project, install dependencies, configure the .env file in the root folder, and run the application.
 
-> You must also run migrations to create database tables and run the seed to populate the database with fake data.
-
+commands:
 ```sh
 bun i
-docker compose up -d
-bun migrate
-bun seed
 bun dev
+```
+
+.env file:
+```sh
+# URL base para a API da aplicação.
+API_BASE_URL="http://localhost:3333"
+
+# URL de redirecionamento para autenticação.
+AUTH_REDIRECT_URL="http://localhost:5173"
+
+# URL de conexão com o banco de dados PostgreSQL.
+DB_URL="postgresql://pizza-shop-db_owner:h6TiworN8JQf@ep-fragrant-resonance-a57e0jcb.us-east-2.aws.neon.tech/pizza-shop-db?sslmode=require"
+
+# Chave secreta usada para assinar tokens JWT.
+JWT_SECRET_KEY="my-super-secret-key"
 ```
 
 ## Features
