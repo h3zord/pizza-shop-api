@@ -10,6 +10,8 @@ Food delivery app (aka. iFood/Uber Eats) back-end built with TypeScript, Drizzle
 
 commands:
 ```sh
+git clone git@github.com:h3zord/pizza-shop-api.git
+cd pizza-shop-api
 bun i
 bun dev
 ```
