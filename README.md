@@ -6,7 +6,7 @@ Food delivery app (aka. iFood/Uber Eats) back-end built with TypeScript, Drizzle
 
 ## Running
 
-> Clone the project, install dependencies, configure the .env file in the root folder, and run the application.
+> Following this order, clone the project, install dependencies, configure the .env file in the root folder, and finally run the application.
 
 commands:
 ```
