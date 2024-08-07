@@ -9,7 +9,7 @@ Food delivery app (aka. iFood/Uber Eats) back-end built with TypeScript, Drizzle
 > Clone the project, install dependencies, configure the .env file in the root folder, and run the application.
 
 commands:
-```sh
+```
 git clone git@github.com:h3zord/pizza-shop-api.git
 cd pizza-shop-api
 bun i
