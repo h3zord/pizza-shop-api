@@ -22,7 +22,7 @@ bun dev
 API_BASE_URL="http://localhost:3333"
 
 # URL de redirecionamento para autenticação.
-AUTH_REDIRECT_URL="http://localhost:5173"
+AUTH_REDIRECT_URL="http://localhost:5173/dashboard"
 
 # URL de conexão com o banco de dados PostgreSQL.
 DB_URL="postgresql://pizza-shop-db_owner:h6TiworN8JQf@ep-fragrant-resonance-a57e0jcb.us-east-2.aws.neon.tech/pizza-shop-db?sslmode=require"
